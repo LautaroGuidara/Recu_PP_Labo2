@@ -7,7 +7,10 @@ pygame.init()
 
 jugador_img = pygame.image.load("oi-oi-oi.png")
 jugador_img_resize = pygame.transform.scale(jugador_img, (70, 70))
-
+game_over = pygame.image.load("Game_Over_logo.png")
+game_over = pygame.transform.scale(game_over, (400, 200))
+heart = pygame.image.load("heart.png")
+heart = pygame.transform.scale(heart, (300, 150))
 
 #areas de los cuatro opcion
 area_opcion1 = pygame.Rect(300, 100, 250, 30)
@@ -197,12 +200,16 @@ def get_player_name():
         screen.fill(celeste)
         draw_text("Enter your name:", font_big, negro, screen, 20, 20)
         draw_text(name, font_big, negro, screen, 20, 100)
-        draw_text("Ranking: ", font_big, negro, screen, 300, 50)
+        draw_text("Ranking: ", font_big, negro, screen, 400, 50)
         ranking = cargar_datos_rank("leaderboard.json")
-        print(f"ranking cargado: {ranking}")
         ordenar_lista(ranking, "score")
         for i in range(len(ranking)):
-            draw_text(f"{ranking[i]['name']}--->{ranking[i]['score']}", font_medium, negro, screen, 300, 200 + i * 40)        
+            draw_text(f"{ranking[i]['name']}--->{ranking[i]['score']}", font_medium, negro, screen, 400, 100 + i * 40)     
+        screen.blit(jugador_img, (150, 300))   
+        screen.blit(game_over, (600, 50))
+        screen.blit(heart, (550, 430))
+        draw_text("GRACIAS POR JUGAR!", font_medium, negro, screen, 400, 500)
+        
         pygame.display.flip()
     return name
 
