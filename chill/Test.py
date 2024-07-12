@@ -26,20 +26,13 @@ pause = True
 
 while running: # Se verifica si el usuario cerro la ventana
     
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == click:
-            x = event.pos[0]
-            y = event.pos[1]
-            x_aux = x
-            y_aux = y
-            print(f"\nx:{x_aux} y:{y_aux}")
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_pos = pygame.mouse.get_pos()
-            anashi = check_comenzar(mouse_pos)
-            if anashi == True:
+            comenzar_flag = check_comenzar(mouse_pos)
+            if comenzar_flag == True:
                 
                 if pause == True:
                     start_ticks = pygame.time.get_ticks()
@@ -54,7 +47,7 @@ while running: # Se verifica si el usuario cerro la ventana
                     player_pos += 2
                     score += 10
                     player_pos = handle_special_squares_correct(player_pos)
-                    current_question, start_ticks, time_left = next_question(current_question, start_ticks)
+                    current_question, start_ticks,time_left = next_question(current_question, start_ticks)
                     print("click correcto")
                 elif result == False:
                     player_pos -= 1
