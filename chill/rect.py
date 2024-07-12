@@ -218,7 +218,7 @@ def ordenar_lista(lista, clave):
                 aux = lista[j]
                 lista[j] = lista[j+1]
                 lista[j+1] = aux
-#Funcion para guardar el score del usuario
+#Funcion para guardar el score del usuario (Funcion que se utiliza normalmente despues de get_player_name)
 def save_score(name, score):
     try:
         with open(leaderboard_file, 'r') as file: #Cargar el contenido del archivo en la variable 'leaderboard'
@@ -256,13 +256,14 @@ def check_answer(mouse_pos, correct_option, options_rects):
 
 
 def next_question(current_question, start_ticks):
-    current_question += 1
-    if current_question >= len(questions):
-        current_question = 0
-    start_ticks = pygame.time.get_ticks()
-    time_left = 5
-    return current_question, start_ticks, time_left
+    current_question += 1  # Avanzar a la siguiente pregunta
+    if current_question >= len(questions):  # Verificar si se excede el número de preguntas
+        current_question = 0  # Reiniciar a la primera pregunta si es necesario
+    start_ticks = pygame.time.get_ticks()  # Reiniciar los ticks de inicio
+    time_left = 5  # Establecer el tiempo restante en 5 segundos devuelta
+    return current_question, start_ticks, time_left  # Devolver los valores
 
+#funciones para cassilas especiales
 def handle_special_squares_correct(player_pos):
     if player_pos == 6:
         player_pos += 1
@@ -289,31 +290,31 @@ def get_image_coordinates(player_pos):
         case 3:
             return (460, 200)  # Coordenadas para player_pos = 3
         case 4:
-            return (540, 200)  # Coordenadas predeterminadas
+            return (540, 200)  # Coordenadas para player_pos = 4
         case 5:
-            return (620, 200)  # Coordenadas predeterminadas
+            return (620, 200)  # Coordenadas para player_pos = 5
         case 6:
-            return (700, 200)  # Coordenadas predeterminadas
+            return (700, 200)  # Coordenadas para player_pos = 6
         case 7:
-            return (780, 200)  # Coordenadas predeterminadas
+            return (780, 200)  # Coordenadas para player_pos = 7
         case 8:
-            return (860, 200)  # Coordenadas predeterminadas
+            return (860, 200)  # Coordenadas para player_pos = 8
         case 9:
-            return (860, 320)  # Coordenadas predeterminadas
+            return (860, 320)  # Coordenadas para player_pos = 9
         case 10:
-            return (780, 320)  # Coordenadas predeterminadas
+            return (780, 320)  # Coordenadas para player_pos = 10
         case 11:
-            return (700, 320)  # Coordenadas predeterminadas
+            return (700, 320)  # Coordenadas para player_pos = 11
         case 12:
-            return (620, 320)  # Coordenadas predeterminadas
+            return (620, 320)  # Coordenadas para player_pos = 12
         case 13:
-            return (540, 320)  # Coordenadas predeterminadas
+            return (540, 320)  # Coordenadas para player_pos = 13
         case 14:
-            return (460, 320)  # Coordenadas predeterminadas
+            return (460, 320)  # Coordenadas para player_pos = 14
         case 15:
-            return (380, 320)  # Coordenadas predeterminadas
+            return (380, 320)  # Coordenadas para player_pos = 15
         case 16:
-            return (300, 320)  # Coordenadas predeterminadas
+            return (300, 320)  # Coordenadas para player_pos = 16
 
             
         
