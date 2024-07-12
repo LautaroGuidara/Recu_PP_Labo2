@@ -5,6 +5,7 @@ from datos import lista
 
 pygame.init()
 
+#imagenes pygame
 jugador_img = pygame.image.load("oi-oi-oi.png")
 jugador_img_resize = pygame.transform.scale(jugador_img, (70, 70))
 game_over = pygame.image.load("Game_Over_logo.png")
@@ -69,6 +70,9 @@ def check_answer_with_areas(mouse_pos, current_question):
             return False
     return None
 
+comenzar = pygame.Rect(200, 450, 280, 130)
+terminar = pygame.Rect(550, 450, 270, 130)
+
 def check_terminar(mouse_pos):
     if area_terminar.collidepoint(mouse_pos):
         return True
@@ -98,30 +102,18 @@ casilla14 =  pygame.Rect(460, 350, 70, 50)
 casilla15 =  pygame.Rect(380, 350, 70, 50)
 casilla16 =  pygame.Rect(300, 350, 70, 50)
 
-blanco = (255, 255, 255)
-negro = (0, 0, 0)
-rojo = (255, 0, 0)
-verde = (0, 255, 0)
-verde_oscuro = (11, 97, 35)
-azul = (0, 0, 255)
-azul_oscuro = (11, 50, 97)
-naranja = (255, 97, 35)
-amarillo = (255, 255,0)
-celeste = (3, 157, 252)
-rosa = (255, 0, 255)
-aqua = (0, 255, 135)
 
-comenzar = pygame.Rect(200, 450, 280, 130)
-terminar = pygame.Rect(550, 450, 270, 130)
-
+#fuentes
 font_big = pygame.font.Font(None, 40)
 font_medium = pygame.font.Font(None, 28)
 font_small = pygame.font.Font(None, 18)
 
+#evento click
 click = pygame.MOUSEBUTTONDOWN
-x_aux = 0
-y_aux = 0
 
+#funciones de dibujo para la pantalla (estetico)
+
+#Funcion que crea las casillas automaticamente
 def crear_casillas()-> None:
     pygame.draw.rect(screen, verde_oscuro, board)
     pygame.draw.rect(screen, naranja, casilla1)
@@ -143,6 +135,7 @@ def crear_casillas()-> None:
     pygame.draw.rect(screen, azul_oscuro, comenzar)
     pygame.draw.rect(screen, azul_oscuro, terminar)
 
+#funcion que carga y dibuja las imagenes
 def crear_imagenes()-> None:
     arrow = pygame.image.load("curved_arrow.png")
     resized_arrow = pygame.transform.scale(arrow, (100, 100))
@@ -158,6 +151,7 @@ def crear_imagenes()-> None:
     screen.blit(arrow_salida, (200, 285))
     screen.blit(utn_race, (1, 1))
 
+#funcion que dibuja el texto predeterminado en la pantalla
 def crear_texto()-> None:
     
 
@@ -175,13 +169,14 @@ def crear_texto()-> None:
     screen.blit(volver_principio1, (386, 360))         
     screen.blit(volver_principio2, (389, 380))         
                    
-
+#funcion extra para dibujar texto para utilidades
 def draw_text(text, font, color, surface, x, y):
     text_obj = font.render(text, True, color)
     text_rect = text_obj.get_rect()
     text_rect.topleft = (x, y)
     surface.blit(text_obj, text_rect)
 
+#Funcion principal de final del juego. Usada para pedir el Nombre del usuario luego de la partida.
 def get_player_name():
     name = ""
     input_active = True
@@ -190,13 +185,14 @@ def get_player_name():
             if event.type == pygame.QUIT:
                 pygame.quit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN: # presionar la tecla ENTER -> input_active False. Se termina el bucle.
                     input_active = False
-                elif event.key == pygame.K_BACKSPACE:
-                    name = name[:-1]
-                else:
-                    name += event.unicode
+                elif event.key == pygame.K_BACKSPACE: #presionar la tecla BACKSPACE, 
+                    name = name[:-1]                    #se elimina el último carácter de la variable name
+                else: #presionae cualquier otra tecla -> carácter se añade al nombre. 
+                    name += event.unicode   #event.unicode que contiene el carácter de la tecla presionada.
 
+        #Creacion de la pantalla de gameover
         screen.fill(celeste)
         draw_text("Enter your name:", font_big, negro, screen, 20, 20)
         draw_text(name, font_big, negro, screen, 20, 100)
@@ -213,8 +209,8 @@ def get_player_name():
         pygame.display.flip()
     return name
 
-leaderboard_file = 'leaderboard.json'
 
+#Funcion bubblesort para mayor a menor
 def ordenar_lista(lista, clave):
     for i in range(len(lista) - 1):
         for j in range(0,len(lista) - i - 1):
@@ -222,36 +218,42 @@ def ordenar_lista(lista, clave):
                 aux = lista[j]
                 lista[j] = lista[j+1]
                 lista[j+1] = aux
-
+#Funcion para guardar el score del usuario
 def save_score(name, score):
     try:
-        with open(leaderboard_file, 'r') as file:
+        with open(leaderboard_file, 'r') as file: #Cargar el contenido del archivo en la variable 'leaderboard'
             leaderboard = json.load(file)
     except FileNotFoundError:
-        leaderboard = []
+        leaderboard = [] # Si el archivo no existe, inicializar 'leaderboard' como una lista vacía
 
+    # Añadir el nuevo nombre y puntaje a la tabla de clasificación
     leaderboard.append({"name": name, "score": score})
-
+    
+    # Guardar la tabla de clasificación actualizada en el archivo
     with open(leaderboard_file, 'w') as file:
         json.dump(leaderboard, file)
-
+#funcion para cargar
 def cargar_datos_rank(path: str) -> list|None:
     datos = None # Inicializo la variable para almacenar datos
-    if len(path) > 0 and type(path) == str: 
+    if len(path) > 0 and type(path) == str: #La función verifica si la longitud de la cadena path es mayor que 0 y si path es una cadena str.
+        try:
           with open(path, 'r', encoding="utf-8") as f:
-              datos = json.load(f)
-    return datos
+              datos = json.load(f) # Cargar los datos del archivo en 'datos'
+        except FileNotFoundError:
+            datos = None  # Si el archivo no se encuentra, 'datos' permanece como None
+    return datos  # Devolver los datos cargados o None si no se pudo leer el archivo
 
-
+#Funciones y variables para la lista de preguntas
 questions = lista
 current_question = 0
 options = ['a', 'b', 'c']
 
 def check_answer(mouse_pos, correct_option, options_rects):
     for i in range(len(options_rects)):
-        if options_rects[i].collidepoint(mouse_pos):
-            return i == correct_option
-    return False
+        if options_rects[i].collidepoint(mouse_pos):  # Verifica si el mouse está dentro del rectángulo
+            return i == correct_option  # Devolver True si el índice coincide con la opción correcta
+    return False  # Devolver False si no hay coincidencia
+
 
 def next_question(current_question, start_ticks):
     current_question += 1

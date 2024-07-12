@@ -19,3 +19,14 @@ aqua = (0, 255, 135)
 
 running = True
 
+player_pos = 0
+score = 0
+time_left = 5
+leaderboard_file = 'leaderboard.json'
+total_positions = 17
+seconds = 5
+remaining_game_time = 2
+total_game_time = 10 #2 min
+
+x_aux = 0
+y_aux = 0
