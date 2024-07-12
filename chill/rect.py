@@ -1,0 +1,310 @@
+import pygame    
+from constantes import *
+import json
+from datos import lista 
+
+pygame.init()
+
+jugador_img = pygame.image.load("oi-oi-oi.png")
+jugador_img_resize = pygame.transform.scale(jugador_img, (70, 70))
+
+
+#areas de los cuatro opcion
+area_opcion1 = pygame.Rect(300, 100, 250, 30)
+area_opcion2 = pygame.Rect(300, 140, 250, 30)
+area_opcion3 = pygame.Rect(300, 180, 250, 30)
+area_comenzar = pygame.Rect(200, 451, 280, 130)
+area_terminar = pygame.Rect(550, 450, 280, 130)
+
+areas_correctas_por_ronda = [
+    area_opcion1,  # Ronda 1: opcion 1
+    area_opcion2,  # Ronda 2: opcion 2
+    area_opcion2,  # Ronda 3: opcion 2
+    area_opcion2,  # Ronda 4: opcion 2
+    area_opcion2,  # Ronda 5: opcion 2
+    area_opcion3,  # Ronda 6: opcion 3
+    area_opcion1,  # Ronda 7: opcion 1
+    area_opcion1,  # Ronda 8: opcion 1
+    area_opcion3,  # Ronda 9: opcion 3
+    area_opcion3,  # Ronda 10: opcion 3
+    area_opcion1,  # Ronda 11: opcion 1
+    area_opcion3,  # Ronda 12: opcion 3
+    area_opcion2,  # Ronda 13: opcion 2
+    area_opcion1,  # Ronda 14: opcion 1
+    area_opcion1,  # Ronda 15: opcion 1
+    area_opcion2   # ronda 16: opcion 2
+]
+
+areas_incorrectas_por_ronda = [
+    [area_opcion2,area_opcion3],  # Ronda 1: opcion 1
+    [area_opcion1,area_opcion2],  # Ronda 2: opcion 2
+    [area_opcion1,area_opcion3],  # Ronda 3: opcion 2
+    [area_opcion1,area_opcion2],  # Ronda 4: opcion 2
+    [area_opcion2,area_opcion3],  # Ronda 5: opcion 2
+    [area_opcion1,area_opcion3],  # Ronda 6: opcion 3
+    [area_opcion1,area_opcion2],  # Ronda 7: opcion 1
+    [area_opcion1,area_opcion2],  # Ronda 8: opcion 1
+    [area_opcion2,area_opcion3],  # Ronda 9: opcion 3
+    [area_opcion1,area_opcion3],  # Ronda 10: opcion 3
+    [area_opcion1,area_opcion2],  # Ronda 11: opcion 1
+    [area_opcion1,area_opcion2],  # Ronda 12: opcion 3
+    [area_opcion2,area_opcion3],  # Ronda 13: opcion 2
+    [area_opcion1,area_opcion3],  # Ronda 14: opcion 1
+    [area_opcion1,area_opcion2],  # Ronda 15: opcion 1
+    [area_opcion1,area_opcion3]   # Ronda 16: opcion 2
+]
+
+def check_answer_with_areas(mouse_pos, current_question):
+    # Obtener las áreas correctas e incorrectas para la ronda actual
+    area_correcta = areas_correctas_por_ronda[current_question]
+    areas_incorrectas = areas_incorrectas_por_ronda[current_question]
+
+    if area_correcta.collidepoint(mouse_pos):
+        return True
+    for area_incorrecta in areas_incorrectas:
+        if area_incorrecta.collidepoint(mouse_pos):
+            return False
+    return None
+
+def check_terminar(mouse_pos):
+    if area_terminar.collidepoint(mouse_pos):
+        return True
+
+def check_comenzar(mouse_pos):
+    if area_comenzar.collidepoint(mouse_pos):
+        return True
+
+
+screen = pygame.display.set_mode([ancho_ventana, alto_ventana])   
+
+board = pygame.Rect(300, 3, 400, 200)
+casilla1 =  pygame.Rect(300, 250, 70, 50)
+casilla2 =  pygame.Rect(380, 250, 70, 50)
+casilla3 =  pygame.Rect(460, 250, 70, 50)
+casilla4 =  pygame.Rect(540, 250, 70, 50)
+casilla5 =  pygame.Rect(620, 250, 70, 50)
+avanza1 =  pygame.Rect(700, 250, 70, 50)
+casilla7 =  pygame.Rect(780, 250, 70, 50)
+casilla8 =  pygame.Rect(860, 250, 70, 50)
+casilla9 =  pygame.Rect(860, 350, 70, 50)
+casilla10 =  pygame.Rect(780, 350, 70, 50)
+casilla11 =  pygame.Rect(700, 350, 70, 50)
+casilla12 =  pygame.Rect(620, 350, 70, 50)
+retrocede1 =  pygame.Rect(540, 350, 70, 50)
+casilla14 =  pygame.Rect(460, 350, 70, 50)
+casilla15 =  pygame.Rect(380, 350, 70, 50)
+casilla16 =  pygame.Rect(300, 350, 70, 50)
+
+blanco = (255, 255, 255)
+negro = (0, 0, 0)
+rojo = (255, 0, 0)
+verde = (0, 255, 0)
+verde_oscuro = (11, 97, 35)
+azul = (0, 0, 255)
+azul_oscuro = (11, 50, 97)
+naranja = (255, 97, 35)
+amarillo = (255, 255,0)
+celeste = (3, 157, 252)
+rosa = (255, 0, 255)
+aqua = (0, 255, 135)
+
+comenzar = pygame.Rect(200, 450, 280, 130)
+terminar = pygame.Rect(550, 450, 270, 130)
+
+font_big = pygame.font.Font(None, 40)
+font_medium = pygame.font.Font(None, 28)
+font_small = pygame.font.Font(None, 18)
+
+click = pygame.MOUSEBUTTONDOWN
+x_aux = 0
+y_aux = 0
+
+def crear_casillas()-> None:
+    pygame.draw.rect(screen, verde_oscuro, board)
+    pygame.draw.rect(screen, naranja, casilla1)
+    pygame.draw.rect(screen, rojo, casilla2)
+    pygame.draw.rect(screen, amarillo, casilla3)
+    pygame.draw.rect(screen, verde, casilla4)
+    pygame.draw.rect(screen, rosa, casilla5)
+    pygame.draw.rect(screen, blanco, avanza1)       
+    pygame.draw.rect(screen, aqua, casilla7)
+    pygame.draw.rect(screen, azul, casilla8)
+    pygame.draw.rect(screen, azul, casilla9)
+    pygame.draw.rect(screen, aqua, casilla10)
+    pygame.draw.rect(screen, blanco, casilla11)
+    pygame.draw.rect(screen, rosa, casilla12)
+    pygame.draw.rect(screen, verde, retrocede1)
+    pygame.draw.rect(screen, amarillo, casilla14)
+    pygame.draw.rect(screen, rojo, casilla15)
+    pygame.draw.rect(screen, naranja, casilla16)
+    pygame.draw.rect(screen, azul_oscuro, comenzar)
+    pygame.draw.rect(screen, azul_oscuro, terminar)
+
+def crear_imagenes()-> None:
+    arrow = pygame.image.load("curved_arrow.png")
+    resized_arrow = pygame.transform.scale(arrow, (100, 100))
+    smiley_face = pygame.image.load("smiley_face.png")
+    player = pygame.transform.scale(smiley_face, (70, 60))
+    pre_arrow_salida = pygame.image.load("arrow_salida.png")
+    arrow_salida = pygame.transform.scale(pre_arrow_salida, (90, 30))
+    utn_race_load = pygame.image.load("utn_race.png")
+    utn_race = pygame.transform.scale(utn_race_load, (290, 220))   
+
+    screen.blit(resized_arrow, (910, 280))
+    screen.blit(player, (200, 220))
+    screen.blit(arrow_salida, (200, 285))
+    screen.blit(utn_race, (1, 1))
+
+def crear_texto()-> None:
+    
+
+    avanza1_text = font_small.render("Avanza 1", True, negro)  # True for anti-aliasing
+    retrocede1_text = font_small.render("Retrocede 1", True, negro)
+    volver_principio1 = font_small.render("Vuelve al", True, negro)
+    volver_principio2 = font_small.render("principio", True, negro)
+    comenzar_text = font_big.render("COMENZAR", True, blanco)
+    terminar_text = font_big.render("TERMINAR", True, blanco)        
+
+    screen.blit(avanza1_text, (707, 270))  
+    screen.blit(retrocede1_text, (540, 370)) 
+    screen.blit(comenzar_text, (250, 500))
+    screen.blit(terminar_text, (610, 500))         
+    screen.blit(volver_principio1, (386, 360))         
+    screen.blit(volver_principio2, (389, 380))         
+                   
+
+def draw_text(text, font, color, surface, x, y):
+    text_obj = font.render(text, True, color)
+    text_rect = text_obj.get_rect()
+    text_rect.topleft = (x, y)
+    surface.blit(text_obj, text_rect)
+
+def get_player_name():
+    name = ""
+    input_active = True
+    while input_active:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    input_active = False
+                elif event.key == pygame.K_BACKSPACE:
+                    name = name[:-1]
+                else:
+                    name += event.unicode
+
+        screen.fill(celeste)
+        draw_text("Enter your name:", font_big, negro, screen, 20, 20)
+        draw_text(name, font_big, negro, screen, 20, 100)
+        draw_text("Ranking: ", font_big, negro, screen, 300, 50)
+        ranking = cargar_datos_rank("leaderboard.json")
+        print(f"ranking cargado: {ranking}")
+        ordenar_lista(ranking, "score")
+        for i in range(len(ranking)):
+            draw_text(f"{ranking[i]['name']}--->{ranking[i]['score']}", font_medium, negro, screen, 300, 200 + i * 40)        
+        pygame.display.flip()
+    return name
+
+leaderboard_file = 'leaderboard.json'
+
+def ordenar_lista(lista, clave):
+    for i in range(len(lista) - 1):
+        for j in range(0,len(lista) - i - 1):
+            if lista[j][clave] < lista[j + 1][clave]:
+                aux = lista[j]
+                lista[j] = lista[j+1]
+                lista[j+1] = aux
+
+def save_score(name, score):
+    try:
+        with open(leaderboard_file, 'r') as file:
+            leaderboard = json.load(file)
+    except FileNotFoundError:
+        leaderboard = []
+
+    leaderboard.append({"name": name, "score": score})
+
+    with open(leaderboard_file, 'w') as file:
+        json.dump(leaderboard, file)
+
+def cargar_datos_rank(path: str) -> list|None:
+    datos = None # Inicializo la variable para almacenar datos
+    if len(path) > 0 and type(path) == str: 
+          with open(path, 'r', encoding="utf-8") as f:
+              datos = json.load(f)
+    return datos
+
+
+questions = lista
+current_question = 0
+options = ['a', 'b', 'c']
+
+def check_answer(mouse_pos, correct_option, options_rects):
+    for i in range(len(options_rects)):
+        if options_rects[i].collidepoint(mouse_pos):
+            return i == correct_option
+    return False
+
+def next_question(current_question, start_ticks):
+    current_question += 1
+    if current_question >= len(questions):
+        current_question = 0
+    start_ticks = pygame.time.get_ticks()
+    time_left = 5
+    return current_question, start_ticks, time_left
+
+def handle_special_squares_correct(player_pos):
+    if player_pos == 6:
+        player_pos += 1
+    elif player_pos == 13:
+        player_pos -= 1
+    return player_pos
+
+def handle_special_square_reset(player_pos, score):
+    if player_pos == 15:
+        player_pos = 0
+        score = 0
+    return player_pos, score
+
+
+# Función para obtener las coordenadas de la imagen
+def get_image_coordinates(player_pos):
+    match player_pos:
+        case 0:
+            return (200, 210)
+        case 1:
+            return (300, 200)  # Coordenadas para player_pos = 1
+        case 2:
+            return (380, 200)  # Coordenadas para player_pos = 2
+        case 3:
+            return (460, 200)  # Coordenadas para player_pos = 3
+        case 4:
+            return (540, 200)  # Coordenadas predeterminadas
+        case 5:
+            return (620, 200)  # Coordenadas predeterminadas
+        case 6:
+            return (700, 200)  # Coordenadas predeterminadas
+        case 7:
+            return (780, 200)  # Coordenadas predeterminadas
+        case 8:
+            return (860, 200)  # Coordenadas predeterminadas
+        case 9:
+            return (860, 320)  # Coordenadas predeterminadas
+        case 10:
+            return (780, 320)  # Coordenadas predeterminadas
+        case 11:
+            return (700, 320)  # Coordenadas predeterminadas
+        case 12:
+            return (620, 320)  # Coordenadas predeterminadas
+        case 13:
+            return (540, 320)  # Coordenadas predeterminadas
+        case 14:
+            return (460, 320)  # Coordenadas predeterminadas
+        case 15:
+            return (380, 320)  # Coordenadas predeterminadas
+        case 16:
+            return (300, 320)  # Coordenadas predeterminadas
+
+            
+        
